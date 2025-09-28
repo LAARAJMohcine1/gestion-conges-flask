@@ -1,0 +1,163 @@
+<nav class="bg-gray-800 shadow-lg h-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div class="flex items-center justify-between h-full">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="flex items-center">
+                        <!-- Logo officiel de l'Agence Urbaine de Taza-Taounate -->
+                        <div class="w-10 h-10 mr-3 relative">
+                            <!-- Bordure verte -->
+                            <div class="absolute inset-0 bg-green-700 rounded-lg"></div>
+                            <!-- Fond blanc -->
+                            <div class="absolute inset-1 bg-white rounded-md"></div>
+                            <!-- Carré bleu rotatif -->
+                            <div class="absolute inset-2 bg-blue-400 rounded-sm transform -rotate-12 border border-gray-600"></div>
+                            <!-- Bâtiment stylisé -->
+                            <div class="absolute inset-3 flex flex-col justify-end">
+                                <!-- Bandes horizontales représentant le bâtiment -->
+                                <div class="h-1 bg-orange-800 rounded-sm mb-0.5"></div>
+                                <div class="h-1 bg-orange-600 rounded-sm mb-0.5"></div>
+                                <div class="h-1 bg-orange-500 rounded-sm mb-0.5"></div>
+                                <div class="h-1 bg-orange-400 rounded-sm"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="text-white font-bold text-lg">الوكالة الحضرية</span>
+                            <div class="text-gray-300 text-xs">لتازة - Taounate</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="{{ url_for('dashboard.index') }}" 
+                           class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+                            Tableau de bord
+                        </a>
+                        {% if current_user.is_admin %}
+                        <a href="{{ url_for('employee.index') }}" 
+                           class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+                            Employés
+                        </a>
+                        <a href="{{ url_for('department.index') }}" 
+                           class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+                            Départements
+                        </a>
+                        {% endif %}
+                        <a href="{{ url_for('leave.index') }}" 
+                           class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+                            Congés
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="hidden md:flex items-center">
+                <div class="ml-4 flex items-center md:ml-6">
+                    <button class="p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                        <span class="sr-only">Voir les notifications</span>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                    </button>
+                    <div class="ml-3 relative group">
+                        <div class="flex items-center">
+                            <span class="text-gray-300 mr-4">{{ current_user.username }}</span>
+                            <button class="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                                <div class="h-8 w-8 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 flex items-center justify-center text-white font-semibold">
+                                    {{ current_user.username[0].upper() }}
+                                </div>
+                            </button>
+                        </div>
+                        <div class="hidden group-hover:block absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5">
+                            <a href="{{ url_for('profile.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Votre Profil</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Paramètres</a>
+                            <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-sm text-red-700 hover:bg-gray-100">
+                                Déconnexion
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex md:hidden">
+                <button type="button" onclick="toggleMobileMenu()" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                    <span class="sr-only">Ouvrir le menu principal</span>
+                    <svg class="block h-6 w-6" id="menuIcon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="hidden md:hidden bg-gray-800" id="mobileMenu">
+        <div class="px-2 pt-2 pb-3 space-y-1">
+            <a href="{{ url_for('dashboard.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700">
+                Tableau de bord
+            </a>
+            {% if current_user.is_admin %}
+            <a href="{{ url_for('employee.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700">
+                Employés
+            </a>
+            <a href="{{ url_for('department.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700">
+                Départements
+            </a>
+            {% endif %}
+            <a href="{{ url_for('leave.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700">
+                Congés
+            </a>
+        </div>
+        <div class="pt-4 pb-3 border-t border-gray-700">
+            <div class="flex items-center px-5">
+                <div class="flex-shrink-0">
+                    <div class="h-10 w-10 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 flex items-center justify-center text-white font-semibold">
+                        {{ current_user.username[0].upper() }}
+                    </div>
+                </div>
+                <div class="ml-3">
+                    <div class="text-base font-medium text-white">{{ current_user.username }}</div>
+                    <div class="text-sm font-medium text-gray-400">{{ current_user.email }}</div>
+                </div>
+            </div>
+            <div class="mt-3 px-2 space-y-1">
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">
+                    Votre Profil
+                </a>
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">
+                    Paramètres
+                </a>
+                <a href="{{ url_for('auth.logout') }}" class="block px-3 py-2 rounded-md text-base font-medium text-red-400 hover:text-white hover:bg-gray-700">
+                    Déconnexion
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuIcon = document.getElementById('menuIcon');
+    
+    if (mobileMenu.classList.contains('hidden')) {
+        mobileMenu.classList.remove('hidden');
+        menuIcon.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        `;
+    } else {
+        mobileMenu.classList.add('hidden');
+        menuIcon.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        `;
+    }
+}
+
+// Fermer le menu mobile lors du redimensionnement de la fenêtre
+window.addEventListener('resize', () => {
+    if (window.innerWidth >= 768) { // 768px est le breakpoint md de Tailwind
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenu.classList.add('hidden');
+        const menuIcon = document.getElementById('menuIcon');
+        menuIcon.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        `;
+    }
+});
+</script> 

@@ -1,0 +1,34 @@
+{% extends "shared/base.html" %}
+{% from "shared/form_macros.html" import form_container, form_section, input_field, select_field, textarea_field, form_buttons %}
+
+{% block content %}
+{% call form_container('Demande de congé', 'Soumettez votre demande de congé') %}
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        
+        <div class="space-y-8 divide-y divide-gray-200">
+            {% call form_section('Détails de la demande', 'Veuillez remplir les informations concernant votre demande de congé', true) %}
+                {{ select_field(form.leave_type, help_text='Sélectionnez le type de congé',
+                    icon='<svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>'
+                ) }}
+                
+                {{ input_field(form.start_date, type='date',
+                    icon='<svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>'
+                ) }}
+                
+                {{ input_field(form.end_date, type='date',
+                    icon='<svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>'
+                ) }}
+                
+                {{ textarea_field(form.reason, help_text='Expliquez brièvement la raison de votre demande de congé') }}
+            {% endcall %}
+        </div>
+
+        {{ form_buttons(
+            cancel_url=url_for('dashboard.index'),
+            submit_text="Soumettre la demande",
+            cancel_text="Annuler"
+        ) }}
+    </form>
+{% endcall %}
+{% endblock %} 

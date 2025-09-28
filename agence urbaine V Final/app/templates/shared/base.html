@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title if title else 'الوكالة الحضرية لتازة تاونات - Agence Urbaine' }}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Animations CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+    
+    <!-- Configuration Tailwind personnalisée -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'agency-blue': '#1e40af',
+                        'agency-yellow': '#fbbf24',
+                        'agency-dark-blue': '#1e3a8a',
+                        'agency-light-blue': '#3b82f6'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Styles personnalisés -->
+    <style>
+        .agency-gradient {
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+        }
+        .agency-yellow-gradient {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        }
+        .text-shadow {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header officiel inspiré du site -->
+    <header class="agency-gradient shadow-lg animate-slide-down">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Logo et nom de l'agence -->
+            <div class="flex items-center justify-between py-6">
+                <div class="flex items-center animate-fade-in-left">
+                    <!-- Logo officiel agrandi -->
+                    <div class="w-20 h-20 mr-6 relative animate-zoom-in">
+                        <!-- Logo image avec fallback -->
+                        <img src="{{ url_for('static', filename='images/logo.png') }}" 
+                             alt="Logo Agence Urbaine" 
+                             class="w-full h-full object-contain rounded-lg hover:scale-110 transition-transform duration-300"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <!-- Fallback si l'image ne charge pas -->
+                        <div class="w-full h-full bg-green-700 rounded-lg flex items-center justify-center text-white font-bold text-lg" style="display:none;">
+                            <div class="text-center">
+                                <div class="text-lg">A.U</div>
+                                <div class="text-sm">Taza</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="animate-fade-in-up animation-delay-200">
+                        <h1 class="text-white font-bold text-xl">الوكالة الحضرية لتازة تاونات</h1>
+                        <p class="text-blue-200 text-sm">Agence Urbaine de Taza-Taounate</p>
+                    </div>
+                </div>
+                
+                <!-- Menu utilisateur (si connecté) -->
+                {% if current_user.is_authenticated %}
+                <div class="flex items-center space-x-4 animate-fade-in-right">
+                    <span class="text-white text-sm">{{ current_user.username }}</span>
+                    <div class="relative" id="userMenuContainer">
+                        <button id="userMenuButton" class="flex items-center space-x-2 text-white hover:text-yellow-300 focus:outline-none">
+                            <div class="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center text-white font-semibold text-sm">
+                                {{ current_user.username[0].upper() }}
+                            </div>
+                            <svg class="h-4 w-4 transition-transform duration-200" id="menuArrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                            <a href="{{ url_for('dashboard.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">Tableau de bord</a>
+                            {% if current_user.is_admin %}
+                            <a href="{{ url_for('employee.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">Employés</a>
+                            <a href="{{ url_for('department.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">Départements</a>
+                            {% endif %}
+                            <a href="{{ url_for('leave.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">Congés</a>
+                            <a href="{{ url_for('profile.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">Mon Profil</a>
+                            <hr class="my-1 border-gray-200">
+                            <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition-colors">
+                                Déconnexion
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Messages flash masqués pour un environnement professionnel -->
+
+    <!-- Contenu principal -->
+    <main class="flex-1 animate-fade-in">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer inspiré du site officiel -->
+    <footer class="agency-gradient text-white mt-auto animate-fade-in-up">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Informations de contact -->
+            <div class="text-center">
+                <h3 class="text-lg font-semibold mb-4 text-yellow-300">Contact</h3>
+                <div class="space-y-2 text-sm">
+                    <p>Agence Urbaine de Taza-Taounate</p>
+                    <p>Taza, Maroc</p>
+                    <p>Tél: +212 5 35 67 89 01</p>
+                    <p>Email: contact@agence-urbaine-taza.ma</p>
+                </div>
+            </div>
+            
+            <!-- Copyright -->
+            <div class="border-t border-blue-300/30 mt-8 pt-6 text-center">
+                <p class="text-sm">
+                    © 2025 AGENCE URBAINE DE TAZA-TAOUNATE. Tous droits réservés.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+    
+    <!-- Script pour le menu utilisateur -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userMenuButton = document.getElementById('userMenuButton');
+            const userMenu = document.getElementById('userMenu');
+            const menuArrow = document.getElementById('menuArrow');
+            
+            if (userMenuButton && userMenu) {
+                // Ouvrir/fermer le menu au clic
+                userMenuButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = !userMenu.classList.contains('hidden');
+                    
+                    if (isOpen) {
+                        // Fermer le menu
+                        userMenu.classList.add('hidden');
+                        menuArrow.style.transform = 'rotate(0deg)';
+                    } else {
+                        // Ouvrir le menu
+                        userMenu.classList.remove('hidden');
+                        menuArrow.style.transform = 'rotate(180deg)';
+                    }
+                });
+                
+                // Fermer le menu en cliquant ailleurs
+                document.addEventListener('click', function(e) {
+                    if (!userMenuButton.contains(e.target) && !userMenu.contains(e.target)) {
+                        userMenu.classList.add('hidden');
+                        menuArrow.style.transform = 'rotate(0deg)';
+                    }
+                });
+                
+                // Fermer le menu avec la touche Escape
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        userMenu.classList.add('hidden');
+                        menuArrow.style.transform = 'rotate(0deg)';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

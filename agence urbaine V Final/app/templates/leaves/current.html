@@ -1,0 +1,247 @@
+{% extends "shared/base.html" %}
+
+{% block content %}
+<div class="min-h-full bg-gray-100">
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <a href="{{ url_for('dashboard.index') }}" 
+                       class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-agency-blue">
+                        <svg class="-ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Retour
+                    </a>
+                    <h1 class="text-3xl font-bold text-gray-900">
+                        Employés en congé
+                    </h1>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="text-sm text-gray-500">
+                        Aujourd'hui : {{ today.strftime('%d/%m/%Y') }}
+                    </span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                        {{ current_leaves|length }} employé(s) en congé
+                    </span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        {% if current_leaves %}
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:px-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Liste des employés actuellement en congé
+                </h3>
+                <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                    Employés absents aujourd'hui ({{ today.strftime('%d/%m/%Y') }})
+                </p>
+            </div>
+            
+            <div class="border-t border-gray-200">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Employé
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Type de congé
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Période
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Jours restants
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Raison
+                                </th>
+                                <th scope="col" class="relative px-6 py-3">
+                                    <span class="sr-only">Actions</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for leave in current_leaves %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <div class="h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center">
+                                                <span class="text-white font-medium">
+                                                    {{ leave.employee.first_name[0] }}{{ leave.employee.last_name[0] }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                {{ leave.employee.first_name }} {{ leave.employee.last_name }}
+                                            </div>
+                                            <div class="text-sm text-gray-500">
+                                                {{ leave.employee.department.name if leave.employee.department else 'Non assigné' }}
+                                            </div>
+                                            <div class="text-xs text-gray-400">
+                                                {{ leave.employee.position }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        {% if leave.leave_type == 'vacation' %}
+                                            <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                                            <span class="text-sm text-gray-900">Congés payés</span>
+                                        {% elif leave.leave_type == 'sick' %}
+                                            <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                                            <span class="text-sm text-gray-900">Congé maladie</span>
+                                        {% else %}
+                                            <div class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+                                            <span class="text-sm text-gray-900">Congé personnel</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">
+                                        Du {{ leave.start_date.strftime('%d/%m/%Y') }}
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        Au {{ leave.end_date.strftime('%d/%m/%Y') }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {% set days_remaining = (leave.end_date - today).days %}
+                                    {% if days_remaining > 0 %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            {{ days_remaining }} jour(s) restant(s)
+                                        </span>
+                                    {% elif days_remaining == 0 %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            Dernier jour
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            En retard
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-900 max-w-xs truncate" title="{{ leave.reason }}">
+                                        {{ leave.reason }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <a href="{{ url_for('leave.view', id=leave.id) }}" 
+                                       class="text-agency-blue hover:text-agency-dark-blue">
+                                        Voir détails
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Statistiques rapides -->
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
+                                <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">
+                                    Congés payés
+                                </dt>
+                                <dd class="text-lg font-medium text-gray-900">
+                                    {{ current_leaves | selectattr('leave_type', 'equalto', 'vacation') | list | length }}
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center">
+                                <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">
+                                    Congés maladie
+                                </dt>
+                                <dd class="text-lg font-medium text-gray-900">
+                                    {{ current_leaves | selectattr('leave_type', 'equalto', 'sick') | list | length }}
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
+                                <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">
+                                    Congés personnels
+                                </dt>
+                                <dd class="text-lg font-medium text-gray-900">
+                                    {{ current_leaves | selectattr('leave_type', 'equalto', 'personal') | list | length }}
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% else %}
+        <div class="text-center py-12">
+            <div class="mx-auto h-12 w-12 text-gray-400">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun employé en congé</h3>
+            <p class="mt-1 text-sm text-gray-500">
+                Tous les employés sont présents aujourd'hui.
+            </p>
+            <div class="mt-6">
+                <a href="{{ url_for('leave.index') }}" 
+                   class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-agency-blue hover:bg-agency-dark-blue focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-agency-blue">
+                    Voir toutes les demandes de congé
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

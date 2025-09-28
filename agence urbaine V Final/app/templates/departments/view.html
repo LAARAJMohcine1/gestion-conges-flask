@@ -1,0 +1,119 @@
+{% extends "shared/base.html" %}
+
+{% block content %}
+<div class="min-h-full bg-gray-100">
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div class="md:flex md:items-center md:justify-between">
+                <div class="flex-1 min-w-0">
+                    <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+                        {{ department.name }}
+                    </h2>
+                    <p class="mt-1 text-sm text-gray-500">
+                        Créé le {{ department.created_at.strftime('%d/%m/%Y') }}
+                    </p>
+                </div>
+                <div class="mt-4 flex md:mt-0 md:ml-4">
+                    <a href="{{ url_for('department.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Retour à la liste
+                    </a>
+                    <a href="{{ url_for('department.edit', id=department.id) }}" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Modifier
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="py-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Informations du département -->
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                <div class="px-4 py-5 sm:px-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                        Informations du département
+                    </h3>
+                </div>
+                <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+                    <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+                        <div class="sm:col-span-2">
+                            <dt class="text-sm font-medium text-gray-500">
+                                Description
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900">
+                                {{ department.description or 'Aucune description disponible' }}
+                            </dd>
+                        </div>
+                        <div class="sm:col-span-1">
+                            <dt class="text-sm font-medium text-gray-500">
+                                Manager
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900">
+                                {% if department.manager %}
+                                    {{ department.manager.first_name }} {{ department.manager.last_name }}
+                                    <p class="text-sm text-gray-500">{{ department.manager.position }}</p>
+                                {% else %}
+                                    Non assigné
+                                {% endif %}
+                            </dd>
+                        </div>
+                        <div class="sm:col-span-1">
+                            <dt class="text-sm font-medium text-gray-500">
+                                Nombre d'employés
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900">
+                                {{ department.employees|length }}
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Liste des employés -->
+            <div class="mt-8 bg-white shadow overflow-hidden sm:rounded-lg">
+                <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                        Employés du département
+                    </h3>
+                </div>
+                <div class="bg-white">
+                    <ul role="list" class="divide-y divide-gray-200">
+                        {% for employee in department.employees %}
+                        <li class="px-4 py-4 sm:px-6 hover:bg-gray-50">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center">
+                                            <span class="text-white font-medium">
+                                                {{ employee.first_name[0] }}{{ employee.last_name[0] }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">
+                                            {{ employee.first_name }} {{ employee.last_name }}
+                                        </div>
+                                        <div class="text-sm text-gray-500">
+                                            {{ employee.position }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <a href="{{ url_for('employee.view', id=employee.id) }}" class="text-indigo-600 hover:text-indigo-900">
+                                        Voir le profil
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                        {% else %}
+                        <li class="px-4 py-4 sm:px-6 text-center text-gray-500">
+                            Aucun employé dans ce département
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %} 
